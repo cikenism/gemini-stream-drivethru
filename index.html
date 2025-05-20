@@ -312,7 +312,6 @@
             if (response.text) {
                 displayMessage("GEMINI: " + response.text);
 
-                // Coba parse text jika dia JSON string
                 try {
                     const parsed = JSON.parse(response.text);
                     if (Array.isArray(parsed)) {
@@ -338,64 +337,6 @@
             }
         }
 
-
-        // function receiveMessage(event) {
-        //     const messageData = JSON.parse(event.data);
-        //     const response = new Response(messageData);
-
-        //     if(response.text){
-        //         displayMessage("GEMINI: " + response.text);
-        //     }
-        //     if(response.audioData){
-        //       injestAudioChuckToPlay(response.audioData);
-        //     }
-
-        //     // Check if message contains an order
-        //     if (messageData.order && messageData.order.menu && messageData.order.qty) {
-        //         updateCurrentOrderUI(messageData.order.menu, messageData.order.qty);
-        //     }
-        // }
-
-        // function receiveMessage(event) {
-        //     const messageData = JSON.parse(event.data);
-
-        //     // Jika berupa array (seperti function call dari Gemini)
-        //     if (Array.isArray(messageData)) {
-        //         messageData.forEach((item) => {
-        //             if (item.name === "save_order" && item.response?.result) {
-        //                 const { menu, qty } = item.response.result;
-        //                 updateCurrentOrderUI(menu, qty);
-        //                 displayMessage(`GEMINI: ${qty} × ${menu}`);
-        //             }
-        //         });
-        //         return;
-        //     }
-
-        //     // Jika bukan array, lanjutkan dengan format biasa
-        //     const response = new Response(messageData);
-
-        //     if (response.text) {
-        //         displayMessage("GEMINI: " + response.text);
-        //     }
-
-        //     if (response.audioData) {
-        //         injestAudioChuckToPlay(response.audioData);
-        //     }
-
-        //     if (messageData.save_order && messageData.save_order.menu && messageData.save_order.qty) {
-        //         updateCurrentOrderUI(messageData.save_order.menu, messageData.save_order.qty);
-        //     }
-        // }
-
-        // function updateCurrentOrderUI(menu, qty) {
-        //     const orderList = document.getElementById("orderList");
-
-        //     const listItem = document.createElement("li");
-        //     listItem.textContent = `${qty} × ${menu}`;
-        //     listItem.style.marginBottom = "5px";
-        //     orderList.appendChild(listItem);
-        // }
-
         function updateCurrentOrderUI(menu, qty) {
             const orderList = document.getElementById("orderList");
 
@@ -408,14 +349,12 @@
 
             orderList.appendChild(listItem);
 
-                // Tampilkan tombol jika list tidak kosong
             if (orderList.children.length > 0) {
                 confirmButton.style.display = "block";
             }
         }
 
         function generateRandomOrderId() {
-            // Misalnya acak dari 10000 hingga 99999
             return Math.floor(10000 + Math.random() * 90000);
         }
 
@@ -425,6 +364,37 @@
         orderTag.textContent = `Order ${randomId}`;
         });
 
+        const confirmButton = document.getElementById("confirmButton");
+        const orderList = document.getElementById("orderList");
+
+        confirmButton.addEventListener("click", () => {
+            // Hapus semua item dari order list
+            orderList.innerHTML = "";
+
+            // Sembunyikan tombol konfirmasi
+            confirmButton.style.display = "none";
+
+            // (Opsional) Tampilkan pesan sementara
+            alert("Pesanan dikonfirmasi!");
+        });
+
+        // Tambahkan fungsi ini saat setiap pesanan baru ditambahkan
+        function updateCurrentOrderUI(menu, qty) {
+            const orderList = document.getElementById("orderList");
+
+            const listItem = document.createElement("li");
+            listItem.className = "order-item";
+            listItem.innerHTML = `
+                <span class="order-menu">${menu}</span>
+                <span class="order-qty">&times; ${qty}</span>
+            `;
+
+            orderList.appendChild(listItem);
+
+            if (orderList.children.length > 0) {
+                confirmButton.style.display = "block";
+            }
+        }
 
         async function initializeAudioContext() {
           if (initialized) return;
