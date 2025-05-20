@@ -1,5 +1,9 @@
 ## pip install google-genai==0.3.0
 
+# to run the app 
+# python main.py
+# python -m http.server
+
 import asyncio
 import json
 import os
