@@ -13,7 +13,7 @@ from google.genai import types
 import base64
 
 # Load API key from environment
-os.environ['GOOGLE_API_KEY'] = ''
+os.environ['GOOGLE_API_KEY'] = 'AIzaSyAUJPPpOjL_-q3HboVWCkgCoyOfKuq_6zY'
 MODEL = "gemini-2.0-flash-exp"  # use your model ID
 
 client = genai.Client(
@@ -22,10 +22,11 @@ client = genai.Client(
     }
 )
 
-def save_order(menu, qty):
+def save_order(menu, qty, price):
     return {
         "menu": menu,
         "qty": qty,
+        "price": price,
     }
 
 # Define the tool (function)
@@ -39,14 +40,37 @@ tool_save_order = {
                 "properties": {
                     "menu": {
                         "type": "STRING",
-                        "description": "Restoran cepat saji ini menawarkan berbagai pilihan menu lezat seperti pada restoran cepat saji pada umumnya. "
+                        "description": "Restoran cepat saji ini menawarkan berbagai pilihan menu lezat seperti pada restoran cepat saji pada umumnya."
                     },
                     "qty": {
                         "type": "INTEGER",
                         "description": "Jumlah item yang dipesan, misalnya 1, 2, 5"
+                    },
+                    "price": {
+                        "type": "NUMBER",
+                        "description": "Harga menu kisaran 8000 sampai 40000 rupiah"
                     }
                 },
-                "required": ["menu", "qty"]
+                "required": ["menu", "qty", "price"]
+            }
+        }
+    ]
+}
+
+tool_total_price = {
+    "function_declarations": [
+        {
+            "name": "total_price",
+            "description": "menghitung total harga dari qty dikali dengan price pada fungsi save order",
+            "parameters": {
+                "type": "OBJECT",
+                "properties": {
+                    "total": {
+                        "type": "NUMBER",
+                        "description": "total harga"
+                    }
+                },
+                "required": ["total"]
             }
         }
     ]
@@ -144,7 +168,7 @@ async def gemini_session_handler(client_websocket: websockets.WebSocketServerPro
                                                  # Validate function name
                                                  if name == "save_order":
                                                       try:
-                                                          result = save_order(args["menu"], int(args["qty"]))
+                                                          result = save_order(args["menu"], int(args["qty"]), int(args["price"]))
                                                           function_responses.append(
                                                              {
                                                                  "name": name,

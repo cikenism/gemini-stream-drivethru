@@ -61,6 +61,11 @@
             color: white;
             width: 100%;
         }
+
+        .orange-btn:hover {
+            background-color: #cd520b; 
+        }
+
         .orange-btn:disabled {
             background-color: #f3bfa3;
         }
@@ -134,6 +139,10 @@
         .order-qty {
             font-size: 0.9rem;
             color: #a65d00;
+        }
+
+        .order-price {
+            color: #4a2e00;
         }
 
     </style>
@@ -317,8 +326,8 @@
                     if (Array.isArray(parsed)) {
                         parsed.forEach((item) => {
                             if (item.name === "save_order" && item.response?.result) {
-                                const { menu, qty } = item.response.result;
-                                updateCurrentOrderUI(menu, qty);
+                                const { menu, qty, price } = item.response.result;
+                                updateCurrentOrderUI(menu, qty, price);
                             }
                         });
                     }
@@ -332,8 +341,8 @@
             }
 
             // Tangani juga jika Gemini mengirim langsung dalam bentuk objek
-            if (messageData.order && messageData.order.menu && messageData.order.qty) {
-                updateCurrentOrderUI(messageData.order.menu, messageData.order.qty);
+            if (messageData.order && messageData.order.menu && messageData.order.qty && messageData.order.price) {
+                updateCurrentOrderUI(messageData.order.menu, messageData.order.qty, messageData.order.price);
             }
         }
 
@@ -345,6 +354,7 @@
             listItem.innerHTML = `
                 <span class="order-menu">${menu}</span>
                 <span class="order-qty">&times; ${qty}</span>
+                <span class="order-price">Rp ${price}</span>
             `;
 
             orderList.appendChild(listItem);
@@ -379,7 +389,7 @@
         });
 
         // Tambahkan fungsi ini saat setiap pesanan baru ditambahkan
-        function updateCurrentOrderUI(menu, qty) {
+        function updateCurrentOrderUI(menu, qty, price) {
             const orderList = document.getElementById("orderList");
 
             const listItem = document.createElement("li");
@@ -387,6 +397,7 @@
             listItem.innerHTML = `
                 <span class="order-menu">${menu}</span>
                 <span class="order-qty">&times; ${qty}</span>
+                <span class="order-price">Rp ${price}</span>
             `;
 
             orderList.appendChild(listItem);
